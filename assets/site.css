@@ -1,0 +1,178 @@
+/* andromedaho.com: "Incoming Transmission" landing with the live sector-transit galaxy.
+   Faction themes follow the game's style guide: Imperium "Armored Bulkhead" (HUD cyan),
+   Corsair "Raider Spires", Voidborn "Spectral Tide" / "Null Jaws". */
+
+@font-face { font-family: "Tomorrow"; font-weight: 200; font-style: normal; font-display: swap; src: url("/assets/fonts/tomorrow-extralight.woff") format("woff"); }
+@font-face { font-family: "Tomorrow"; font-weight: 300; font-style: normal; font-display: swap; src: url("/assets/fonts/tomorrow-light.woff") format("woff"); }
+@font-face { font-family: "Tomorrow"; font-weight: 500; font-style: normal; font-display: swap; src: url("/assets/fonts/tomorrow-medium.woff") format("woff"); }
+
+:root {
+  --page: #020309;
+  --text: #e6ebf2;
+  --body: #c3cddc;
+  --muted: #8a97ad;
+  --dim: #7d8aa0;
+  color-scheme: dark;
+}
+
+/* ---- Faction themes ---- */
+:root[data-faction="imperium"] {
+  --accent: #4db3ff; --bright: #8fd0ff; --ink: #e3f3ff; --deep: #030b16; --glow: rgba(77, 179, 255, 0.4);
+  --frame-clip: polygon(28px 0, calc(100% - 28px) 0, 100% 28px, 100% calc(100% - 28px), calc(100% - 28px) 100%, 28px 100%, 0 calc(100% - 28px), 0 28px);
+  --btn-clip: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
+}
+:root[data-faction="corsair"] {
+  --accent: #ff4000; --bright: #ff7a45; --ink: #ffe9de; --deep: #0d0504; --glow: rgba(255, 64, 0, 0.4);
+  --frame-clip: polygon(56px 0, 38% 0, calc(38% + 14px) 14px, calc(38% + 140px) 14px, calc(38% + 154px) 0, 100% 0, 100% calc(100% - 56px), calc(100% - 56px) 100%, 62% 100%, calc(62% - 14px) calc(100% - 14px), calc(62% - 140px) calc(100% - 14px), calc(62% - 154px) 100%, 0 100%, 0 56px);
+  --btn-clip: polygon(16px 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
+}
+:root[data-faction="voidborn"] {
+  --accent: #6114e6; --bright: #a77bff; --ink: #efe6ff; --deep: #07040f; --glow: rgba(97, 20, 230, 0.4);
+  --frame-clip: polygon(0 30px, 30px 0, calc(100% - 30px) 0, 100% 30px, 100% 38%, calc(100% - 16px) calc(38% + 22px), calc(100% - 16px) calc(62% - 22px), 100% 62%, 100% calc(100% - 30px), calc(100% - 30px) 100%, 30px 100%, 0 calc(100% - 30px), 0 62%, 16px calc(62% - 22px), 16px calc(38% + 22px), 0 38%);
+  --btn-clip: inset(0 round 999px);
+}
+
+/* ---- Page ---- */
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--page); }
+body {
+  font-family: "Tomorrow", system-ui, sans-serif; font-weight: 300; color: var(--text);
+  min-height: 100vh; padding: clamp(16px, 4vw, 64px); display: flex; flex-direction: column; gap: 24px;
+}
+a { color: var(--muted); }
+a:hover { color: var(--text); }
+button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
+.fx { transition: background-color .6s ease, color .6s ease, filter .6s ease; }
+.js-only { display: none; }
+.js .js-only { display: flex; }
+
+/* ---- Comm-panel frame (the game's "Broken Inner" family, shaped per faction) ---- */
+.frame-glow { filter: drop-shadow(0 0 22px var(--glow)); }
+.frame { background: var(--accent); padding: 2px; clip-path: var(--frame-clip); }
+.panel { position: relative; display: flex; flex-wrap: wrap; min-height: 780px; clip-path: var(--frame-clip); }
+
+/* Faction motion: Imperium slow and regular, Corsair fast and aggressive, Voidborn drifting. */
+:root[data-faction="imperium"] .scan {
+  background-image: linear-gradient(180deg, rgba(111,192,255,0) 0, rgba(111,192,255,.08) 50%, rgba(111,192,255,0) 100%),
+    repeating-linear-gradient(180deg, rgba(111,192,255,.045) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg, #0a1528 0%, #03060d 100%);
+  background-size: 100% 240px, 100% 100%, 100% 100%; background-repeat: no-repeat, repeat, no-repeat;
+  animation: imp-scan 9s linear infinite;
+}
+@keyframes imp-scan { from { background-position: 0 -240px, 0 0, 0 0; } to { background-position: 0 1200px, 0 0, 0 0; } }
+:root[data-faction="corsair"] .scan {
+  background-image: repeating-linear-gradient(115deg, rgba(255,122,69,.07) 0 2px, transparent 2px 14px),
+    linear-gradient(180deg, #26100a 0%, #080304 100%);
+  animation: cor-hatch 1.2s linear infinite;
+}
+@keyframes cor-hatch { from { background-position: 0 0, 0 0; } to { background-position: 15.45px 0, 0 0; } }
+:root[data-faction="voidborn"] .scan {
+  background-image: radial-gradient(ellipse 60% 70% at 75% 50%, rgba(167,123,255,.13), rgba(167,123,255,0) 70%),
+    repeating-linear-gradient(180deg, rgba(167,123,255,.035) 0 1px, transparent 1px 5px),
+    linear-gradient(180deg, #170d30 0%, #05030b 100%);
+  animation: void-drift 8s ease-in-out infinite;
+}
+@keyframes void-drift { 0%, 100% { background-position: 0 0, 0 0, 0 0; } 50% { background-position: -80px 24px, 0 0, 0 0; } }
+
+/* Corner details: Imperium rivets, Corsair triangle brackets, Voidborn arcs. */
+.deco { position: absolute; z-index: 2; display: none; }
+:root[data-faction="imperium"] .deco-imperium,
+:root[data-faction="corsair"] .deco-corsair,
+:root[data-faction="voidborn"] .deco-voidborn { display: block; }
+.rivet { width: 6px; height: 6px; border-radius: 50%; background: #8fd0ff; }
+.rivet.tl { left: 22px; top: 40px; } .rivet.tr { right: 22px; top: 40px; }
+.rivet.bl { left: 22px; bottom: 40px; } .rivet.br { right: 22px; bottom: 40px; }
+.spike-tl { left: 20px; top: 66px; width: 0; height: 0; border-top: 16px solid #ff7a45; border-right: 16px solid transparent; }
+.spike-br { right: 20px; bottom: 66px; width: 0; height: 0; border-bottom: 16px solid #ff7a45; border-left: 16px solid transparent; }
+.arc-tl { left: 30px; top: 40px; width: 18px; height: 18px; border-left: 2px solid #a77bff; border-top: 2px solid #a77bff; border-top-left-radius: 18px; }
+.arc-br { right: 30px; bottom: 40px; width: 18px; height: 18px; border-right: 2px solid #a77bff; border-bottom: 2px solid #a77bff; border-bottom-right-radius: 18px; }
+
+/* ---- Left column ---- */
+.intro { flex: 1 1 460px; min-width: 0; padding: clamp(32px, 5vw, 72px); display: flex; flex-direction: column; gap: 32px; justify-content: center; }
+.channel { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; font-size: 13px; letter-spacing: .32em; font-weight: 500; }
+.channel .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bright); box-shadow: 0 0 10px var(--bright); }
+.channel .live { color: var(--bright); }
+.channel .sub { color: var(--dim); }
+h1 { margin: 0; font-weight: 200; font-size: clamp(44px, 6vw, 62px); line-height: 1; letter-spacing: .05em; max-width: 423px; }
+.tagline { margin: 0; font-size: 19px; line-height: 1.6; color: var(--body); max-width: 540px; }
+.label { font-size: 12px; letter-spacing: .32em; color: var(--muted); font-weight: 500; }
+.choose { flex-direction: column; gap: 14px; }
+.emblems { display: flex; flex-wrap: wrap; gap: 14px; }
+/* Emblem = rim (the button, 1px of colour) around a core (.emblem-in), both clipped to the
+   faction's button shape, so the outline follows every diagonal. */
+.emblem {
+  --e-clip: none; --e-rim: #263044; --e-core: rgba(3, 6, 13, .92);
+  padding: 1px; border: 0; cursor: pointer; font: inherit; color: inherit; background: var(--e-rim); clip-path: var(--e-clip);
+  opacity: .62; transition: opacity .3s ease, filter .3s ease;
+}
+.emblem-in {
+  display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 110px; min-height: 106px; padding: 14px 18px;
+  background: var(--e-core); clip-path: var(--e-clip); transition: background-color .3s ease;
+}
+.emblem img { width: 56px; height: 56px; display: block; }
+.emblem .name { font-size: 12px; letter-spacing: .24em; font-weight: 500; }
+.emblem:hover { opacity: .85; }
+.emblem[aria-pressed="true"] { opacity: 1; }
+.emblem-wrap { transition: filter .3s ease; }
+.emblem[data-for="imperium"] { --e-clip: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%); }
+.emblem[data-for="imperium"] .name { color: #2fe0a8; }
+.emblem[data-for="imperium"][aria-pressed="true"] { --e-rim: #8fd0ff; --e-core: #030b16; }
+.emblem-wrap:has(.emblem[data-for="imperium"][aria-pressed="true"]) { filter: drop-shadow(0 0 8px #4db3ff); }
+.emblem[data-for="corsair"] { --e-clip: polygon(16px 0, 100% 0, calc(100% - 16px) 100%, 0 100%); }
+.emblem[data-for="corsair"] .name { color: #ff7a45; }
+.emblem[data-for="corsair"][aria-pressed="true"] { --e-rim: #ff7a45; --e-core: #0d0504; }
+.emblem-wrap:has(.emblem[data-for="corsair"][aria-pressed="true"]) { filter: drop-shadow(0 0 8px #ff4000); }
+.emblem[data-for="voidborn"] { --e-clip: inset(0 round 22px); }
+.emblem[data-for="voidborn"] .name { color: #a77bff; }
+.emblem[data-for="voidborn"][aria-pressed="true"] { --e-rim: #a77bff; --e-core: #07040f; }
+.emblem-wrap:has(.emblem[data-for="voidborn"][aria-pressed="true"]) { filter: drop-shadow(0 0 8px #6114e6); }
+.seed-row { flex-wrap: wrap; gap: 14px 20px; align-items: center; }
+.seed { font-size: 12px; letter-spacing: .22em; color: var(--muted); }
+.seed b { color: #d7e3f4; font-weight: 300; }
+
+/* Faction-shaped button: an accent rim (outer) around a dark core (inner span). */
+.btn { border: 0; padding: 1px; background: var(--bright); clip-path: var(--btn-clip); cursor: pointer; font: inherit; min-height: 44px; text-decoration: none; display: inline-block; }
+.btn span { display: block; padding: 12px 26px; background: var(--deep); clip-path: var(--btn-clip); color: var(--ink); font-size: 12px; font-weight: 500; letter-spacing: .2em; }
+.btn:hover span { background: var(--accent); color: #fff; }
+
+/* ---- Galaxy ---- */
+.galaxy { flex: 1 1 520px; min-width: 0; min-height: 520px; position: relative; background: var(--deep); }
+.galaxy canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+@media (max-width: 600px) {
+  .deco { display: none !important; }
+  .panel { min-height: 0; }
+  .galaxy { min-height: 380px; }
+}
+
+footer { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; font-size: 14px; color: #8794a8; letter-spacing: .06em; }
+
+/* ---- Privacy modal (the game's modal: dim backdrop, comm panel, CRT unfold, CLOSE) ---- */
+.pp { position: fixed; inset: 0; z-index: 50; background: rgba(2, 3, 9, .82); display: flex; align-items: center; justify-content: center; padding: clamp(12px, 4vw, 48px); animation: pp-dim .25s ease-out both; }
+.pp[hidden] { display: none; }
+@keyframes pp-dim { from { opacity: 0; } to { opacity: 1; } }
+.pp-dialog { width: 100%; max-width: 860px; animation: pp-crt .42s cubic-bezier(.2, .8, .2, 1) both; transform-origin: 50% 50%; }
+@keyframes pp-crt { 0% { transform: scale(.06, .004); filter: brightness(3); } 45% { transform: scale(1, .004); filter: brightness(2.2); } 100% { transform: scale(1, 1); filter: brightness(1); } }
+.pp-panel { clip-path: var(--frame-clip); display: flex; flex-direction: column; max-height: calc(100vh - 96px); padding: 40px clamp(24px, 4vw, 48px) 32px; }
+.pp-head { display: flex; flex-direction: column; gap: 10px; }
+.pp-head .channel { font-size: 12px; }
+.pp-head .dot { width: 8px; height: 8px; box-shadow: 0 0 8px var(--bright); }
+.pp-head h2 { margin: 0; font-size: clamp(28px, 4vw, 40px); font-weight: 200; letter-spacing: .08em; }
+.pp-head .meta { font-size: 13px; color: var(--muted); letter-spacing: .06em; }
+.pp-head .rule { height: 1px; margin-top: 8px; background: linear-gradient(90deg, var(--accent), rgba(0, 0, 0, 0)); }
+.pp-body { overflow-y: auto; min-height: 0; flex-grow: 1; margin: 20px 0 24px; padding-right: 12px; font-size: 16px; line-height: 1.65; color: var(--body); scrollbar-width: thin; scrollbar-color: #3a4a66 transparent; }
+.pp-body h3 { margin: 28px 0 10px; font-size: 13px; letter-spacing: .3em; font-weight: 500; color: var(--bright); }
+.pp-body p { margin: 0 0 12px; }
+.pp-body ul { margin: 0 0 12px; padding-left: 20px; }
+.pp-body li { margin: 0 0 8px; }
+.pp-body strong { color: var(--text); font-weight: 500; }
+.pp-body a { color: var(--bright); }
+.pp-foot { display: flex; justify-content: flex-end; }
+.pp-foot .btn { min-height: 48px; }
+.pp-foot .btn span { padding: 14px 40px; font-size: 13px; letter-spacing: .24em; }
+body.pp-open { overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scan, .pp, .pp-dialog { animation: none !important; }
+  .fx, .emblem { transition: none; }
+}
