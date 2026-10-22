@@ -98,14 +98,14 @@
   }
   function hexRgb(h) { return [parseInt(h.slice(1, 3), 16) / 255, parseInt(h.slice(3, 5), 16) / 255, parseInt(h.slice(5, 7), 16) / 255]; }
 
-  // Galaxy palette per faction (game palettes via PaletteOverride), panel backdrop, and the real
-  // player hulls (player_ship / player_ship_corsair / player_ship_voidborn), half-size 1, nose at -y.
+  // Per faction: panel backdrop and the real player hulls (player_ship / player_ship_corsair /
+  // player_ship_voidborn), half-size 1, nose at -y. The galaxy palette comes from the seed, as in game.
   var FACTIONS = {
-    imperium: { palette: 3, deep: '#030b16', bright: '#8fd0ff', ship: '#177dff', shipCore: '#b5dcff', shipAcc: null,
+    imperium: { deep: '#030b16', bright: '#8fd0ff', ship: '#177dff', shipCore: '#b5dcff', shipAcc: null,
       hull: [[0, -0.88], [0.18, -0.35], [0.58, 0.3], [0.2, 0.22], [0, 0.5], [-0.2, 0.22], [-0.58, 0.3], [-0.18, -0.35]] },
-    corsair: { palette: 4, deep: '#0d0504', bright: '#ff7a45', ship: '#ff4000', shipCore: '#ffc8ad', shipAcc: null,
+    corsair: { deep: '#0d0504', bright: '#ff7a45', ship: '#ff4000', shipCore: '#ffc8ad', shipAcc: null,
       hull: [[0, -0.95], [0.22, -0.3], [0.65, 0.25], [0.15, 0.3], [0, 0.42], [-0.15, 0.3], [-0.65, 0.25], [-0.22, -0.3]] },
-    voidborn: { palette: 2, deep: '#07040f', bright: '#a77bff', ship: '#6114e6', shipCore: '#c7a6ff', shipAcc: '#34c5ff',
+    voidborn: { deep: '#07040f', bright: '#a77bff', ship: '#6114e6', shipCore: '#c7a6ff', shipAcc: '#34c5ff',
       hull: [[0, -0.95], [0.16, -0.5], [0.24, -0.34], [0.66, 0.04], [0.3, 0.18], [0.24, 0.5], [0.13, 0.6], [0, 0.38], [-0.13, 0.6], [-0.24, 0.5], [-0.3, 0.18], [-0.66, 0.04], [-0.24, -0.34], [-0.16, -0.5]] }
   };
 
@@ -161,20 +161,22 @@
       g: rollGalaxy(randomSeed()), faction: faction, shipFaction: faction,
       t0: performance.now() / 1000 - 40, palT0: -10, switchP: 1, dpr: 1, scale: 1, baseScale: 1, cx: 0, cy: 0
     };
-    S.pal = paletteSet(FACTIONS[faction].palette); S.palFrom = S.pal; S.palTo = S.pal;
+    // Palette = the seed's own (SpiralGalaxyVisual.Regenerate, no PaletteOverride).
+    function useSeedPalette() { S.pal = paletteSet(S.g.palette); S.palFrom = S.pal; S.palTo = S.pal; }
+    useSeedPalette();
     S.bg = hexRgb(FACTIONS[faction].deep);
     var api = {
+      // A faction switch eases only the backdrop and swaps the ship; the galaxy keeps its colors.
       setFaction: function (f) {
         if (!FACTIONS[f] || f === S.faction) return;
         S.faction = f;
-        S.palFrom = S.pal.map(function (c) { return c.slice(); });
-        S.palTo = paletteSet(FACTIONS[f].palette);
         S.bgFrom = S.bg.slice(); S.bgTo = hexRgb(FACTIONS[f].deep);
         S.palT0 = performance.now() / 1000;
         if (!gl) S.shipFaction = f;
       },
       reroll: function () {
         S.g = rollGalaxy(randomSeed());
+        useSeedPalette();
         S.t0 = performance.now() / 1000 - 40;
         if (gl) pushSeed();
       },
